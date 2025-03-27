@@ -23,6 +23,9 @@ Silver Layer: Standardization, deduplication, metadata.
 
 Gold Layer: Aggregation, joining.
 
+Databricks was used for creating the pipeline using their notebook feature where the catalog "ddca_exc4" was created under my organization. All layers and tables were implemented under the ddca_exc4 catalog. Databricks file upload was used to upload the csv files from kaggle to the 
+/FileStore/tables/f1_data folder from where they were ingested into the pipeline.
+
 ## 5 - Repository Structure
 
 📂
