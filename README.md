@@ -36,12 +36,13 @@ Gold Layer: Aggregation, joining.
 
 ## 6 - Example
 
-To demonstrate the pipleine you can check the [example](example/Example of working pipeline.ipynb) notebook. The notebook contains the same pipleine code from the [code](code/Final_project.ipynb) folder. The unit tests from the [test](test/Test_script.ipynb) folder are then ran to ensure all necesarry steps in the pipeline have been performed correctly.
+To demonstrate the pipleine you can check the [example](example/Example of working pipeline.ipynb) notebook. The notebook contains the same pipleine code from the [Final project](code/Final_project.py) file. The unit tests from the [test](test/Test_script.py) file are then ran to ensure all necesarry steps in the pipeline have been performed correctly.
 
 ![image](https://github.com/user-attachments/assets/82435ca8-663f-4991-947b-6f93c424771f)
+
 All tests passed.
 
-The visualizations from the [code](code/Visualizations.ipynb) folder are then performed to gain insight into driver performance.
+The visualizations from the [code](code/Visualizations.py) folder are then performed to gain insight into driver performance.
 
 Top 5 drivers by race wins
 
