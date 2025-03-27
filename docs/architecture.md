@@ -34,3 +34,6 @@ This pipeline processes racing data in Databricks, transforming it through the *
 - **Delta Tables** (for optimized storage and queries)
 
 ---
+
+## **Data Flow Diagram**
+See the `docs/pipeline_architecture.png` for a visual representation of the pipeline.
