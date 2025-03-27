@@ -40,6 +40,43 @@ This document explains the functionality of each Python script used in the pipel
 
 ---
 
+## **5. Unit testing (`Test_script.py`)**
+
+### **Test Functions**
+
+#### **6. `test_catalog_and_schemas_exist()`**
+- **Purpose**: Validates that the `ddca_exc4` catalog and the `bronze`, `silver`, and `gold` schemas exist in the Databricks environment.
+- **Tested Elements**:
+  - Checks if the catalog `ddca_exc4` exists.
+  - Verifies the existence of the `bronze`, `silver`, and `gold` schemas in the catalog.
+
+#### **7. `test_tables_created()`**
+- **Purpose**: Ensures that the required tables are present in each layer (Bronze, Silver, Gold).
+- **Tested Elements**:
+  - Checks the existence of all tables in the Bronze and Silver layers based on the `tables_primary_keys` dictionary.
+  - Ensures that the `race_results_by_date` table exists in the Gold layer.
+
+#### **8. `test_silver_transformations()`**
+- **Purpose**: Ensures that the transformations applied in the Silver layer are correct.
+- **Tested Elements**:
+  - Verifies that there are no null values where they shouldn’t be in the Silver tables.
+  - Ensures that all Silver tables have the necessary metadata columns (`processed_date`, `is_valid`).
+
+#### **9. `test_gold_table()`**
+- **Purpose**: Validates the `race_results_by_date` Gold table.
+- **Tested Elements**:
+  - Ensures that the required columns exist in the Gold table.
+  - Confirms that the table is ordered correctly by the `date` column.
+
+#### **10. `run_pipeline_tests()`**
+- **Purpose**: Runs all tests sequentially.
+- **Test Execution**:
+  - Starts with catalog and schema validation.
+  - Follows by testing table creation for each layer.
+  - Validates Silver layer transformations and checks the Gold layer table.
+  - If all tests pass, it prints a success message; if any test fails, it prints the error and halts execution.
+
+
 ## **Technology Stack**
 - Apache Spark (PySpark)
 - Delta Lake (Databricks)
