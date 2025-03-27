@@ -27,13 +27,13 @@ Gold Layer: Aggregation, joining.
 
 📂
 
-│── [README.md](#main)             # Main project report (this file)
-│── [code/](#code)                 # Pipeline code, test code and visualization code
-│── [docs/](#docs)                 # Project documentation
-│── [misc/](#misc)                 # Empty
-│── [data/](#data)                 # Data used
-│── [test/](#test)                 # Unit test code
-│── [example/](#example)              # Example of working pipeline
+│── [README.md](#main)             Main project report (this file)
+│── [code/](#code)                 Pipeline code, test code and visualization code
+│── [docs/](#docs)                 Project documentation
+│── [misc/](#misc)                 Empty
+│── [data/](#data)                 Data used
+│── [test/](#test)                 Unit test code
+│── [example/](#example)              Example of working pipeline
 
 ## 6 - Example
 
