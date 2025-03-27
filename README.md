@@ -27,7 +27,7 @@ Gold Layer: Aggregation, joining.
 
 📂
 - [README.md](https://github.com/aa-it-vasa/ddca2025-project-group_60/blob/main/README.md) - Main project report (this file)  
-- [code/](https://github.com/aa-it-vasa/ddca2025-project-group_60/tree/main/code) - Pipeline code, test code, and visualization code  
+- [code/](code) - Pipeline code, test code, and visualization code  
 - [docs/](https://github.com/aa-it-vasa/ddca2025-project-group_60/tree/main/docs) - Project documentation  
 - [misc/](https://github.com/aa-it-vasa/ddca2025-project-group_60/tree/main/misc) - Empty  
 - [data/](https://github.com/aa-it-vasa/ddca2025-project-group_60/tree/main/data) - Data used  
@@ -36,7 +36,7 @@ Gold Layer: Aggregation, joining.
 
 ## 6 - Example
 
-To demonstrate the pipleine you can check the [example](example/Example of working pipeline.ipynb) notebook. The notebook contains the same pipleine code from the [Final project](code/Final_project.py) file. The unit tests from the [test](test/Test_script.py) file are then ran to ensure all necesarry steps in the pipeline have been performed correctly.
+To demonstrate the pipleine you can check the [example](example/Example_of_working_pipeline.ipynb) notebook. The notebook contains the same pipleine code from the [Final project](code/Final_project.py) file. The unit tests from the [test](test/Test_script.py) file are then ran to ensure all necesarry steps in the pipeline have been performed correctly.
 
 ![image](https://github.com/user-attachments/assets/82435ca8-663f-4991-947b-6f93c424771f)
 
