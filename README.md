@@ -26,6 +26,7 @@ Gold Layer: Aggregation, joining.
 ## 5 - Repository Structure
 
 📂
+
 │── [README.md](#main)             # Main project report (this file)
 │── [code/](#code)                 # Pipeline code, test code and visualization code
 │── [docs/](#docs)                 # Project documentation
