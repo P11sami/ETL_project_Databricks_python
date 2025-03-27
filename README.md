@@ -74,16 +74,16 @@ Wins by nationality normalized for driver count
 
 ![image](https://github.com/user-attachments/assets/2d29aafb-fa65-4fa3-9dfa-679ccba04e4b)
 
-## 8 - Documentation
+## 7 - Documentation
 
 - [Architecture](docs/architecture.md) - Description of pipeline architecture
 - [Pipeline](docs/Architecture.drawio.png) - Visualization of pipeline architecture
 - [Code](docs/code_documentation.md) - Code description
-## 9 - Conclusion
+## 8 - Conclusion
 
 This project builds a reusable data pipeline for Formual 1 race data using the medallion sctructure. The data is used to gain insight on race winners and create visualizations for different metrics.
 
-## 10 - References
+## 9 - References
 
 - [Kaggle data](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020)
 
