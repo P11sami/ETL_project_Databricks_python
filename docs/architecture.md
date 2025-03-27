@@ -36,4 +36,6 @@ This pipeline processes racing data in Databricks, transforming it through the *
 ---
 
 ## **Data Flow Diagram**
-See the `docs/pipeline_architecture.png` for a visual representation of the pipeline.
+See the [architecture.png](Architecture.drawio.png) for a visual representation of the pipeline.
+
+---
