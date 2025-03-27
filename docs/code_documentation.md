@@ -5,7 +5,7 @@ This document explains the functionality of each Python script used in the pipel
 
 ---
 
-## **1. Data Ingestion (`Final_project.py`)**
+## **1. Data Ingestion ([Final_project.py](code/Final_project.py))**
 - Reads structured (CSV) and unstructured (JSON) files from a given folder.
 - Stores raw data into **Bronze Delta tables**.
 - Uses:
