@@ -48,7 +48,7 @@ All tests passed.
 
 
 
-The visualizations from the [code](code/Visualizations.py) folder are then performed to gain insight into driver performance.
+The visualizations from the [visualization](code/Visualizations.py) file are then performed to gain insight into driver performance.
 
 Top 5 drivers by race wins
 
