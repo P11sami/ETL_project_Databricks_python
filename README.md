@@ -26,7 +26,7 @@ Gold Layer: Aggregation, joining.
 ## 5 - Repository Structure
 
 📂
-- [README.md](#main) - Main project report (this file)  
+- [README.md](https://github.com/aa-it-vasa/ddca2025-project-group_60/blob/main/README.md) - Main project report (this file)  
 - [code/](https://github.com/aa-it-vasa/ddca2025-project-group_60/tree/main/code) - Pipeline code, test code, and visualization code  
 - [docs/](https://github.com/aa-it-vasa/ddca2025-project-group_60/tree/main/docs) - Project documentation  
 - [misc/](https://github.com/aa-it-vasa/ddca2025-project-group_60/tree/main/misc) - Empty  
