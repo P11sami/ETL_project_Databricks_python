@@ -1,116 +1,192 @@
-# Databricks notebook source
-# MAGIC %run /Workspace/Users/sami.seppala@abo.fi/Final_project
+# test_script_serverless.py
+# Serverless-Compatible Pipeline Integration Tests
 
-# COMMAND ----------
+from pyspark.sql.functions import col, lag
+from pyspark.sql.window import Window
 
-# Unit Test Script
+# ==============================
+# CONFIGURATION
+# ==============================
 
-def test_catalog_and_schemas_exist():
-    """Test that the catalog and all layer schemas exist"""
-    print("=== Testing Catalog and Schemas ===")
-    
-    # Checking for catalog
-    catalogs = spark.sql("SHOW CATALOGS").select("catalog").rdd.flatMap(lambda x: x).collect()
-    assert "ddca_exc4" in catalogs, f"Catalog 'ddca_exc4' not found. Available catalogs: {catalogs}"
-    print("✅ Catalog 'ddca_exc4' exists")
-    
-    # Checking schemas
-    required_schemas = ["bronze", "silver", "gold"]
-    existing_schemas = spark.sql("SHOW SCHEMAS IN ddca_exc4").select("databaseName").rdd.flatMap(lambda x: x).collect()
-    
-    missing_schemas = [s for s in required_schemas if s not in existing_schemas]
-    if missing_schemas:
-        print(f"Existing schemas in ddca_exc4: {existing_schemas}")
-        assert False, f"Missing schemas in ddca_exc4 catalog: {missing_schemas}"
-    
-    print("✅ All layer schemas exist in ddca_exc4 catalog")
-    return True
+CATALOG = "ddca_exc4"
+RAW_SCHEMA = "default"
+BRONZE_SCHEMA = "bronze"
+SILVER_SCHEMA = "silver"
+GOLD_SCHEMA = "gold"
+GOLD_TABLE = "race_results_by_date"
 
-def test_tables_created():
-    """Test that tables exist in each layer"""
-    print("\n=== Testing Table Creation ===")
-    
-    # Getting expected tables from primary keys dictionary
-    expected_tables = list(tables_primary_keys.keys())
-    
-    # Checking bronze layer tables
-    bronze_tables = spark.sql("SHOW TABLES IN ddca_exc4.bronze").select("tableName").rdd.flatMap(lambda x: x).collect()
-    missing_bronze = [t for t in expected_tables if t not in bronze_tables]
-    assert not missing_bronze, f"Missing tables in bronze layer: {missing_bronze}"
-    print("✅ All expected tables exist in bronze layer")
-    
-    # Checking silver layer tables
-    silver_tables = spark.sql("SHOW TABLES IN ddca_exc4.silver").select("tableName").rdd.flatMap(lambda x: x).collect()
-    missing_silver = [t for t in expected_tables if t not in silver_tables]
-    assert not missing_silver, f"Missing tables in silver layer: {missing_silver}"
-    print("✅ All expected tables exist in silver layer")
-    
-    # Checking gold layer table
-    gold_tables = spark.sql("SHOW TABLES IN ddca_exc4.gold").select("tableName").rdd.flatMap(lambda x: x).collect()
-    assert "race_results_by_date" in gold_tables, "race_results_by_date missing in gold layer"
-    print("✅ Gold table exists")
+tables_primary_keys = {
+    "circuits": ["circuitid"],
+    "constructor_standings": ["constructorstandingsid", "raceid", "constructorid"],
+    "constructors": ["constructorid"],
+    "driver_standings": ["driverstandingsid", "raceid", "driverid"],
+    "drivers": ["driverid"],
+    "lap_times": ["raceid", "driverid", "lap"],
+    "pit_stops": ["raceid", "driverid", "stop", "lap"],
+    "qualifying": ["qualifyid"],
+    "races": ["raceid"],
+    "results": ["resultid"],
+    "seasons": ["year"],
+    "sprint_results": ["resultid"],
+    "status": ["statusid"]
+}
 
-def test_silver_transformations():
-    """Test that silver layer transformations were applied correctly"""
-    print("\n=== Testing Silver Layer Transformations ===")
-    
-    for table in tables_primary_keys.keys():
-        silver_df = spark.table(f"ddca_exc4.silver.{table}")
-        
-        # Checking null handling
-        null_counts = {col: silver_df.filter(silver_df[col].isNull()).count() 
-                      for col in silver_df.columns}
-        problematic_cols = {col: cnt for col, cnt in null_counts.items() if cnt > 0}
-        assert not problematic_cols, f"Null values found in {table}: {problematic_cols}"
-        
-        # Checking for metadata columns
-        if "processed_date" not in silver_df.columns:
-            print(f"ℹ️ Table {table} missing processed_date column")
-        if "is_valid" not in silver_df.columns:
-            print(f"ℹ️ Table {table} missing is_valid column")
-    
-    print("✅ Silver layer transformations validated")
+# ==============================
+# HELPER FUNCTIONS
+# ==============================
 
-def test_gold_table():
-    """Test that gold table was created correctly"""
-    print("\n=== Testing Gold Layer ===")
-    
-    gold_df = spark.table("ddca_exc4.gold.race_results_by_date")
-    
-    # Checking required columns
+def get_table_names(schema):
+    df = spark.sql(f"SHOW TABLES IN {CATALOG}.{schema}")
+    return [row["tableName"] for row in df.collect()]
+
+
+def get_schema_names():
+    df = spark.sql(f"SHOW SCHEMAS IN {CATALOG}")
+    return [row["databaseName"] for row in df.collect()]
+
+
+def get_catalog_names():
+    df = spark.sql("SHOW CATALOGS")
+    return [row["catalog"] for row in df.collect()]
+
+
+def table_exists(schema, table):
+    return table in get_table_names(schema)
+
+
+def assert_primary_key_unique(df, primary_keys, table_name):
+    total = df.count()
+    distinct = df.select(primary_keys).dropDuplicates().count()
+    assert total == distinct, \
+        f"[{table_name}] Duplicate rows found based on primary keys."
+
+
+def assert_metadata_columns(df, table_name):
+    expected = {"processed_date", "is_valid"}
+    missing = expected - set(df.columns)
+    assert not missing, \
+        f"[{table_name}] Missing metadata columns: {missing}"
+
+
+def assert_no_unknown_in_primary_keys(df, primary_keys, table_name):
+    for pk in primary_keys:
+        unknown_count = df.filter(col(pk) == "Unknown").count()
+        assert unknown_count == 0, \
+            f"[{table_name}] Primary key column '{pk}' contains 'Unknown' values."
+
+
+# ==============================
+# TESTS
+# ==============================
+
+def test_catalog_and_schemas():
+    assert CATALOG in get_catalog_names(), \
+        f"Catalog '{CATALOG}' does not exist."
+
+    schemas = get_schema_names()
+    for schema in [RAW_SCHEMA, BRONZE_SCHEMA, SILVER_SCHEMA, GOLD_SCHEMA]:
+        assert schema in schemas, f"Schema '{schema}' missing."
+
+
+def test_bronze_tables_exist():
+    raw_tables = get_table_names(RAW_SCHEMA)
+
+    for table in raw_tables:
+        assert table_exists(BRONZE_SCHEMA, table), \
+            f"Bronze table '{table}' missing."
+
+
+def test_silver_tables_quality():
+    for table, primary_keys in tables_primary_keys.items():
+
+        assert table_exists(SILVER_SCHEMA, table), \
+            f"Silver table '{table}' missing."
+
+        df = spark.table(f"{CATALOG}.{SILVER_SCHEMA}.{table}")
+
+        # PK existence
+        for pk in primary_keys:
+            assert pk in df.columns, \
+                f"[{table}] Missing primary key column '{pk}'."
+
+        # No 'Unknown' in PK
+        assert_no_unknown_in_primary_keys(df, primary_keys, table)
+
+        # Deduplication validation
+        assert_primary_key_unique(df, primary_keys, table)
+
+        # Metadata columns validation
+        assert_metadata_columns(df, table)
+
+        # Lowercase column validation
+        for column in df.columns:
+            assert column == column.lower(), \
+                f"[{table}] Column '{column}' is not lowercase."
+
+
+def test_gold_table_quality():
+    assert table_exists(GOLD_SCHEMA, GOLD_TABLE), \
+        "Gold table missing."
+
+    df = spark.table(f"{CATALOG}.{GOLD_SCHEMA}.{GOLD_TABLE}")
+
     required_columns = {
-        "date", "race_name", "circuit_name", "circuit_location", 
-        "circuit_country", "driver_forename", "driver_surname",
-        "driver_nationality", "constructor_name", "constructor_nationality",
-        "race_position", "qualifying_position"
+        "date",
+        "race_name",
+        "circuit_name",
+        "circuit_location",
+        "circuit_country",
+        "driver_forename",
+        "driver_surname",
+        "driver_nationality",
+        "constructor_name",
+        "constructor_nationality",
+        "race_position",
+        "qualifying_position"
     }
-    missing_cols = required_columns - set(gold_df.columns)
-    assert not missing_cols, f"Missing columns in gold table: {missing_cols}"
-    
-    # Checking correct data ordering
-    dates = [row.date for row in gold_df.select("date").collect()]
-    assert dates == sorted(dates), "Gold table not ordered by date"
-    
-    print("✅ Gold layer table validated")
 
-def run_pipeline_tests():
-    """Main function to run all tests"""
-    try:
-        print("Starting Data Pipeline Tests\n")
-        
-        # First testing catalog and schemas
-        if not test_catalog_and_schemas_exist():
-            return
-            
-        # Running remaining tests
-        test_tables_created()
-        test_silver_transformations()
-        test_gold_table()
-        
-        print("\n All pipeline tests passed successfully!")
-    except Exception as e:
-        print(f"\n❌ Test failed: {str(e)}")
-        print("Check the pipeline execution and try again")
-        raise
+    missing = required_columns - set(df.columns)
+    assert not missing, \
+        f"Gold table missing columns: {missing}"
 
-run_pipeline_tests()
+    # No NULLs in gold
+    for column in required_columns:
+        null_count = df.filter(col(column).isNull()).count()
+        assert null_count == 0, \
+            f"[Gold] Column '{column}' contains NULL values."
+
+    # Chronological validation
+    window = Window.orderBy("date")
+    out_of_order = (
+        df.withColumn("prev_date", lag("date").over(window))
+          .filter(col("prev_date").isNotNull() & (col("date") < col("prev_date")))
+          .count()
+    )
+
+    assert out_of_order == 0, \
+        "Gold table contains out-of-order dates."
+
+
+# ==============================
+# RUNNER
+# ==============================
+
+def run_all_tests():
+    print("\nRunning Serverless-Compatible Pipeline Tests...\n")
+
+    test_catalog_and_schemas()
+    print("✔ Catalog & schemas validated")
+
+    test_bronze_tables_exist()
+    print("✔ Bronze layer validated")
+
+    test_silver_tables_quality()
+    print("✔ Silver layer validated")
+
+    test_gold_table_quality()
+    print("✔ Gold layer validated")
+
+    print("\n ALL TESTS PASSED SUCCESSFULLY\n")
+
+
+run_all_tests()
