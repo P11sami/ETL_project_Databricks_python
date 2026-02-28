@@ -40,41 +40,62 @@ This document explains the functionality of each Python script used in the pipel
 
 ---
 
-## **5. Unit testing ([Test_script.py](https://github.com/aa-it-vasa/ddca2025-project-group_60/blob/main/code/Test%20script.py))**
+## **5. Integration & Data Quality Testing ([test_script.py](https://github.com/aa-it-vasa/ddca2025-project-group_60/blob/main/code/test_script.py))**
 
 ### **Test Functions**
 
-#### **6. `test_catalog_and_schemas_exist()`**
-- **Purpose**: Validates that the `ddca_exc4` catalog and the `bronze`, `silver`, and `gold` schemas exist in the Databricks environment.
+#### **6. `test_catalog_and_schemas()`**
+- **Purpose**: Validates that the `ddca_exc4` catalog and all required schemas exist in the Databricks environment.
 - **Tested Elements**:
   - Checks if the catalog `ddca_exc4` exists.
-  - Verifies the existence of the `bronze`, `silver`, and `gold` schemas in the catalog.
+  - Verifies the existence of the `default`, `bronze`, `silver`, and `gold` schemas.
+  - Ensures the medallion architecture structure is properly initialized before further validation.
 
-#### **7. `test_tables_created()`**
-- **Purpose**: Ensures that the required tables are present in each layer (Bronze, Silver, Gold).
+#### **7. `test_bronze_tables_exist()`**
+- **Purpose**: Ensures that all raw tables ingested into the `default` schema are correctly replicated into the Bronze layer.
 - **Tested Elements**:
-  - Checks the existence of all tables in the Bronze and Silver layers based on the `tables_primary_keys` dictionary.
-  - Ensures that the `race_results_by_date` table exists in the Gold layer.
+  - Retrieves all non-temporary tables from `ddca_exc4.default`.
+  - Confirms that each raw table exists in `ddca_exc4.bronze`.
+  - Validates successful Bronze layer creation.
 
-#### **8. `test_silver_transformations()`**
-- **Purpose**: Ensures that the transformations applied in the Silver layer are correct.
+#### **8. `test_silver_tables_quality()`**
+- **Purpose**: Validates structural integrity, transformation logic, and data quality rules applied in the Silver layer.
 - **Tested Elements**:
-  - Verifies that there are no null values where they shouldn’t be in the Silver tables.
-  - Ensures that all Silver tables have the necessary metadata columns (`processed_date`, `is_valid`).
+  - Ensures all expected Silver tables exist.
+  - Verifies that primary key columns are present in each table.
+  - Confirms that no `"Unknown"` values appear in primary key columns.
+  - Validates deduplication by checking primary key uniqueness.
+  - Ensures metadata columns (`processed_date`, `is_valid`) are present.
+  - Confirms all column names are standardized to lowercase.
 
-#### **9. `test_gold_table()`**
-- **Purpose**: Validates the `race_results_by_date` Gold table.
+#### **9. `test_gold_table_quality()`**
+- **Purpose**: Validates the correctness and integrity of the `race_results_by_date` Gold table.
 - **Tested Elements**:
-  - Ensures that the required columns exist in the Gold table.
-  - Confirms that the table is ordered correctly by the `date` column.
+  - Ensures the `race_results_by_date` table exists in the Gold schema.
+  - Verifies that all required business columns exist:
+    - `date`
+    - `race_name`
+    - `circuit_name`
+    - `circuit_location`
+    - `circuit_country`
+    - `driver_forename`
+    - `driver_surname`
+    - `driver_nationality`
+    - `constructor_name`
+    - `constructor_nationality`
+    - `race_position`
+    - `qualifying_position`
+  - Confirms there are no NULL values in the final Gold dataset.
+  - Validates chronological ordering by ensuring records are correctly ordered by the `date` column.
 
-#### **10. `run_pipeline_tests()`**
-- **Purpose**: Runs all tests sequentially.
+#### **10. `run_all_tests()`**
+- **Purpose**: Executes all integration and data quality tests sequentially.
 - **Test Execution**:
   - Starts with catalog and schema validation.
-  - Follows by testing table creation for each layer.
-  - Validates Silver layer transformations and checks the Gold layer table.
-  - If all tests pass, it prints a success message; if any test fails, it prints the error and halts execution.
+  - Verifies Bronze layer table replication.
+  - Validates Silver layer transformations and data quality constraints.
+  - Checks the Gold layer aggregation and ordering logic.
+  - If all tests pass, it prints a success message; if any test fails, execution stops with a descriptive assertion error.
 
 
 ## **Technology Stack**
