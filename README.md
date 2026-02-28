@@ -36,6 +36,7 @@ Databricks was used for creating the pipeline using their notebook feature where
 - [data/](data) - Data used  
 - [test/](test) - Unit test code  
 - [example/](example) - Example of working pipeline
+- [images/](images) - Images
 
 ## 6 - Example
 
