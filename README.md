@@ -42,8 +42,6 @@ Databricks was used for creating the pipeline using their notebook feature where
 
 To demonstrate the pipleine you can check the [example](example/Example_of_working_pipeline.ipynb) notebook. The notebook contains the same pipleine code from the [Final project](code/Final_project.py) file. The unit tests from the [test](test/Test_script.py) file are then ran to ensure all necesarry steps in the pipeline have been performed correctly.
 
-![image](https://github.com/user-attachments/assets/82435ca8-663f-4991-947b-6f93c424771f)
-
 All tests passed.
 
 
@@ -51,29 +49,44 @@ All tests passed.
 
 The visualizations from the [visualization](code/Visualizations.py) file are then performed to gain insight into driver performance.
 
-Top 5 drivers by race wins
+## Top 5 Drivers by Race Wins
 
-![image](https://github.com/user-attachments/assets/4eb8c61a-d33d-4622-9662-b0f8e459b45d)
+![Top 5 Drivers by Race Wins](images/Top5driversbyracewins.png)
 
-Top 5 drivers by qualifying wins
 
-![image](https://github.com/user-attachments/assets/61616796-43db-4b90-aaf6-5e2a9fff4c31)
+---
 
-Top 5 constructors by winrate
+## Top 5 Drivers by Qualifying Wins
 
-![image](https://github.com/user-attachments/assets/738626cd-8dd8-4ae3-b902-4ef121319a40)
+![Top 5 Drivers by Qualifying Wins](images/Top5driversbyqualifyingwins.png)
 
-Top 5 circuits by DNF rate
 
-![image](https://github.com/user-attachments/assets/60bb5883-7360-4b57-884e-fd67939f7b45)
+---
 
-Correlation between driver nationality and race wins
+## Top 5 Constructors by Win Rate
 
-![image](https://github.com/user-attachments/assets/493d5613-1b57-4d31-b22a-5f29cbe86ed2)
+![Top 5 Constructors by Win Rate](images/Top5constructorsbywinrate.png)
 
-Wins by nationality normalized for driver count
 
-![image](https://github.com/user-attachments/assets/2d29aafb-fa65-4fa3-9dfa-679ccba04e4b)
+---
+
+## Top 5 Circuits by DNF Rate
+
+![Top 5 Circuits by DNF Rate](images/Top5circuitsbyDNFrate.png)
+
+
+---
+
+## Correlation Between Driver Nationality and Race Wins
+
+![Correlation Between Driver Nationality and Race Wins](images/Drivernationalityvsracewins.png)
+
+
+---
+
+## Wins by Nationality (Normalized for Driver Count)
+
+![Wins by Nationality Normalized](images/winsperdriverbynationality.png)
 
 ## 7 - Documentation
 
